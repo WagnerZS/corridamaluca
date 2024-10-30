@@ -12,11 +12,14 @@ preto = (0, 0, 0)
 fundo = pygame.image.load("assets/fundo.png")
 carro1 = pygame.image.load("assets/carro1.png")
 carro2 = pygame.image.load("assets/carro2.png")
+carro3 = pygame.image.load("assets/carro3.png")
 
 movXCarro1 = 0
 movXCarro2 = 0
-posYCarro1 = 50
-posYCarro2 = 180
+movXCarro3 = 0
+posYCarro1 = 40
+posYCarro2 = 115
+posYCarro3 = 190
 pygame.mixer.music.load("assets/trilha.mp3")
 pygame.mixer.music.play(-1) # -1 looping // 1, 2, 3 vezes
 acabou = False
@@ -33,10 +36,11 @@ while True:
     tela.blit(fundo, (0, 0))
     tela.blit(carro1, (movXCarro1, posYCarro1))
     tela.blit(carro2, (movXCarro2, posYCarro2))
+    tela.blit(carro3, (movXCarro3, posYCarro3))
 
-    if not acabou:
-        movXCarro1 += random.randint(0, 10)
-        movXCarro2 += random.randint(0, 10)
+    # if not acabou:
+    #     movXCarro1 += random.randint(0, 10)
+    #     movXCarro2 += random.randint(0, 10)
 
     if movXCarro1 > 1000:
         movXCarro1 = 0
