@@ -33,7 +33,7 @@ pygame.mixer.music.load("recursos/trilha.mp3")
 pygame.mixer.music.play(-1) # -1 looping // 1, 2, 3 vezes
 acabou = False
 vitoria = pygame.mixer.Sound("recursos/vitoria.mp3")
-vitoria.set_volume(0.5)
+vitoria.set_volume(0.2)
 somDaVitoria = False
 while True:
     for evento in pygame.event.get():
