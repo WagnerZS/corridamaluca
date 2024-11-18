@@ -1,4 +1,5 @@
 import pygame, random
+from recursos.funcoes import geraDicionarioCarros, getPrimeiroCarro, getSegundoCarro, getTerceiroCarro
 
 pygame.init()
 
@@ -6,15 +7,20 @@ tamanho = (1000, 592)
 tela = pygame.display.set_mode(tamanho)
 clock = pygame.time.Clock()
 pygame.display.set_caption("Corrida Maluca")
-icone = pygame.image.load("assets/icone.ico")
+icone = pygame.image.load("recursos/icone.ico")
 pygame.display.set_icon(icone)
 
 branco = (255, 255, 255)
 preto = (0, 0, 0)
-fundo = pygame.image.load("assets/fundo.png")
-carro1 = pygame.image.load("assets/carro1.png")
-carro2 = pygame.image.load("assets/carro2.png")
-carro3 = pygame.image.load("assets/carro3.png")
+fundo = pygame.image.load("recursos/fundo.png")
+carro1 = pygame.image.load("recursos/carro1.png")
+carro2 = pygame.image.load("recursos/carro2.png")
+carro3 = pygame.image.load("recursos/carro3.png")
+fonteVitoria = pygame.font.Font("freesansbold.ttf", 60)
+fontePosicaoCorrida = pygame.font.Font("freesansbold.ttf", 17)
+controleLogCorrida = 0
+textoPrimeiroColocado = ""
+textoSegundoColocado = ""
 
 movXCarro1 = 0
 movXCarro2 = 0
@@ -22,10 +28,10 @@ movXCarro3 = 0
 posYCarro1 = 40
 posYCarro2 = 115
 posYCarro3 = 190
-pygame.mixer.music.load("assets/trilha.mp3")
-pygame.mixer.music.play(-1) # -1 looping // 1, 2, 3 vezes
+# pygame.mixer.music.load("recursos/trilha.mp3")
+# pygame.mixer.music.play(-1) # -1 looping // 1, 2, 3 vezes
 acabou = False
-vitoria = pygame.mixer.Sound("assets/vitoria.mp3")
+vitoria = pygame.mixer.Sound("recursos/vitoria.mp3")
 vitoria.set_volume(0.5)
 somDaVitoria = False
 while True:
@@ -44,38 +50,56 @@ while True:
         movXCarro1 += random.randint(0, 10)
         movXCarro2 += random.randint(0, 10)
         movXCarro3 += random.randint(0, 10)
+        controleLogCorrida += 1
+
+        if movXCarro1 > 1000:
+            movXCarro1 = 0
+            posYCarro1 = 340
+
+        if movXCarro2 > 1000:
+            movXCarro2 = 0
+            posYCarro2 = 415
+
+        if movXCarro3 > 1000:
+            movXCarro3 = 0
+            posYCarro3 = 490
+
+        dicCarros = geraDicionarioCarros(movXCarro1, movXCarro2, movXCarro3)
+        # 0 = Nome do carro // 1 = posicao do carro
+        listCarro1 = getPrimeiroCarro(dicCarros)
+        listCarro2 = getSegundoCarro(dicCarros)
+        listCarro3 = getTerceiroCarro(dicCarros)
+
+        diferencaPrimeiroColocado = int(listCarro1[1] - listCarro2[1])
+        diferencaSegundoColocado = int(listCarro2[1] - listCarro3[1])
+
+        primeiroColocado = fontePosicaoCorrida.render(textoPrimeiroColocado, True, branco)
+        segundoColocado = fontePosicaoCorrida.render(textoSegundoColocado, True, branco)
+
+        if controleLogCorrida == 10:
+            textoPrimeiroColocado = f"1º {listCarro1[0]} {diferencaPrimeiroColocado} pixels do {listCarro2[0]}"
+            textoSegundoColocado = f"2º {listCarro2[0]} {diferencaSegundoColocado} pixels do {listCarro3[0]}"
+            controleLogCorrida = 0
+        
+        tela.blit(primeiroColocado, (700, 25))
+        tela.blit(segundoColocado, (700, 45))
+
+        textoVitoria = fonteVitoria.render(f"{listCarro1[0]} ganhou!", True, branco)
+
+        if posYCarro1 == 340 and movXCarro1 >= 900 and movXCarro1 > movXCarro2 and movXCarro1 > movXCarro3:
+            acabou = True
+        elif posYCarro2 == 415 and movXCarro2 >= 900 and movXCarro2 > movXCarro1 and movXCarro2 > movXCarro3:
+            acabou = True
+        elif posYCarro3 == 490 and movXCarro3 >= 900 and movXCarro3 > movXCarro1 and movXCarro3 > movXCarro2:
+            acabou = True
+            
     else:
         pygame.mixer.music.stop()
         if not somDaVitoria:
-            pygame.mixer.Sound.play(vitoria)
+            # pygame.mixer.Sound.play(vitoria)
             somDaVitoria = True
+        tela.blit(textoVitoria, (260, 60))
 
-    if movXCarro1 > 1000:
-        movXCarro1 = 0
-        posYCarro1 = 340
-
-    if movXCarro2 > 1000:
-        movXCarro2 = 0
-        posYCarro2 = 415
-
-    if movXCarro3 > 1000:
-        movXCarro3 = 0
-        posYCarro3 = 490
-
-    fonte = pygame.font.Font("freesansbold.ttf", 60)
-    textoVermelho = fonte.render("Vermelho ganhou!", True, branco)
-    textoAmarelo = fonte.render("Amarelo ganhou!", True, branco)
-    textoAzul = fonte.render("Azul ganhou!", True, branco)
-
-    if posYCarro1 == 340 and movXCarro1 >= 900 and movXCarro1 > movXCarro2 and movXCarro1 > movXCarro3:
-        tela.blit(textoVermelho, (260, 50))
-        acabou = True
-    elif posYCarro2 == 415 and movXCarro2 >= 900 and movXCarro2 > movXCarro1 and movXCarro2 > movXCarro3:
-        tela.blit(textoAmarelo, (260, 50))
-        acabou = True
-    elif posYCarro3 == 490 and movXCarro3 >= 900 and movXCarro3 > movXCarro1 and movXCarro3 > movXCarro2:
-        tela.blit(textoAzul, (260, 50))
-        acabou = True
 
     pygame.display.update()
     clock.tick(60)
